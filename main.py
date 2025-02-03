@@ -23,11 +23,17 @@ def is_prime(n):
     return True
 
 def is_armstrong_number(n):
-    num_str = str(n)
+    
+    if n < 0:
+        return False
+    
+    num_str = str(abs(n))
     power = len(num_str)
-    return sum(int(digit) ** power for digit in num_str) == n
+    return sum(int(digit) ** power for digit in num_str) == abs(n)
 
 def is_perfect_number(n):
+    if n <= 0:
+        return False
     return n == sum(i for i in range(1, n) if n % i == 0)
 
 @app.get("/api/classify-number")
@@ -48,7 +54,7 @@ async def classify_number(number: str):
 
     # Get number fact
     try:
-        fact = requests.get(f"http://numbersapi.com/{num}/math", timeout=5).text
+        fact = requests.get(f"http://numbersapi.com/{abs(num)}/math", timeout=5).text
     except:
         fact = "No fact available"
 
@@ -57,7 +63,7 @@ async def classify_number(number: str):
         "is_prime": is_prime(num),
         "is_perfect": is_perfect_number(num),
         "properties": properties,
-        "digit_sum": sum(int(digit) for digit in str(num)),
+        "digit_sum": sum(int(digit) for digit in str(abs(num))),
         "fun_fact": fact
     }
 
