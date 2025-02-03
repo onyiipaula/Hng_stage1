@@ -27,12 +27,17 @@ def is_armstrong_number(n):
     power = len(num_str)
     return sum(int(digit) ** power for digit in num_str) == n
 
+def is_perfect_number(n):
+    return n == sum(i for i in range(1, n) if n % i == 0)
+
 @app.get("/api/classify-number")
 async def classify_number(number: str = Query(..., description="The number to classify")):
     try:
         num = int(number)
+        if num < 0:
+            raise HTTPException(status_code=400, detail="Negative numbers are not allowed.")
     except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid number format. Please provide an integer.")
+        raise HTTPException(status_code=400, detail="Invalid number format. Please provide a valid integer.")
 
     # Properties determination
     properties = []
@@ -52,7 +57,7 @@ async def classify_number(number: str = Query(..., description="The number to cl
     return {
         "number": num,
         "is_prime": is_prime(num),
-        "is_perfect": num == sum(i for i in range(1, num) if num % i == 0),
+        "is_perfect": is_perfect_number(num),
         "properties": properties,
         "digit_sum": sum(int(digit) for digit in str(num)),
         "fun_fact": fact
